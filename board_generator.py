@@ -1,3 +1,5 @@
+# copied from internet https://rosettacode.org/wiki/Generate_random_chess_position only adjusted it for my needs
+
 import random
 
 piece_list = ["R", "N", "B", "Q", "P"]

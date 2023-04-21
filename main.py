@@ -35,11 +35,11 @@ def create_model():
 
 def train_model(input_data, model):
     for train_data in input_data:
-        model.fit(train_data[0], train_data[1], epochs=2, verbose=0)
+        model.fit(train_data[0], train_data[1], epochs=1, verbose=0)
     return model
 
 
-i = 0
+counter = 0
 if __name__ == '__main__':
     if os.path.exists("models/model.h5"):
         model = load_model("models/model.h5")
@@ -47,11 +47,10 @@ if __name__ == '__main__':
         model = create_model()
     while True:
         try:
-            i += 1
-            if i % 1000 == 0:
-                save_model(model, f"models/model{i}.h5")
-            fen = get_random_fen()
-            data = record_game(chess.Board(fen), model)
+            counter += 1
+            if counter % 10000 == 0:
+                save_model(model, f"models/model{counter}.h5")
+            data = record_game(chess.Board(), model)
             model = train_model(data, model)
         except KeyboardInterrupt:
             save_model(model, "models/model.h5")
