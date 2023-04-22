@@ -107,6 +107,8 @@ class ChessGUI:
                                                  (int(self.width / 8), int(self.height / 8)))
         self.white_pawn = pygame.transform.scale(pygame.image.load("pieces/wp.png"),
                                                  (int(self.width / 8), int(self.height / 8)))
+        self.prediction = pygame.transform.scale(pygame.image.load("pieces/prediction.png"),
+                                                 (int(self.width / 8), int(self.height / 8)))
 
     def draw_text(self, text, color, x, y):
         self.screen.blit(self.font.render(text, True, color), (x, y))
@@ -149,6 +151,11 @@ class ChessGUI:
                 image = self.white_queen
             elif piece == 6:
                 image = self.white_king
+        elif color == "prediction":
+            if piece == 0:
+                image = self.prediction
+            if piece == 1:
+                image = self.prediction
         else:
             if piece == 1:
                 image = self.black_pawn

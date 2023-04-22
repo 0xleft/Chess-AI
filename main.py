@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 
 neural_gui = NeuralGUI(800, 800)
-
+chess_gui = ChessGUI(800, 800)
 
 def create_model():
     model = Sequential()
@@ -26,23 +26,41 @@ def create_model():
     model.add(Dense(128, activation='linear'))
     # hidden layer 1x256
     model.add(Dense(200, activation='relu'))
+    # hidden layer 1x256
+    model.add(Dense(200, activation='relu'))
+    # hidden layer 1x256
+    model.add(Dense(200, activation='relu'))
     # output is 1x64
     model.add(Dense(128, activation='sigmoid'))
-    model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=1), metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=0.0001), metrics=['accuracy'])
     return model
 
 
 def train_model(input_data, model):
     global counter
     for train_data in input_data:
-        results = model.fit(train_data[0], train_data[1], epochs=4, verbose=1)
+        results = model.fit(train_data[0], train_data[1], epochs=100, verbose=0, batch_size=20)
         neural_gui.draw_neural_network(model)
         counter += 1
+        # chess_gui.clear()
+        # chess_gui.draw_board(train_data[0], model)
+        # chess_gui.update()
+        # # draw prediction
+        # if counter % 1 == 0:
+        #     board_state = get_board_state(chess.Board(train_data[2]))
+        #     prediction = model.predict(board_state, verbose=0)
+        #     _, from_num = get_move(prediction[0][:64])
+        #     _, to_num = get_move(prediction[0][64:])
+        #     chess_gui.draw_piece(0, "prediction", from_num)
+        #     chess_gui.draw_piece(1, "prediction", to_num)
+        #     chess_gui.update()
         if counter % 1000 == 0:
             history.append(results.history["loss"][0])
             plt.plot(history)
             plt.show()
             plt.close('all')
+        if counter % 10000 == 0:
+            save_model(model, f"models/model{counter}.h5")
     return model, results
 
 

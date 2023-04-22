@@ -60,7 +60,7 @@ def collect_player_data(url):
                 move_out = [0] * 128
                 move_out[from_num] = 1
                 move_out[to_num + 64] = 1
-                game_data.append([get_board_state(board), np.array([move_out])])
+                game_data.append([get_board_state(board), np.array([move_out]), board.fen()])
                 if "drop" in move:
                     board.push_san(move["drop"] + "@" + move["to"])
                 else:
