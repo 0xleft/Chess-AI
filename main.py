@@ -9,13 +9,13 @@ import chess
 
 def load_model_weights(model_name, model, chess_gui):
     chess_gui.show_notification("Loading model " + model_name)
+    print(model.summary())
+    chess_gui.show_notification("Loaded model " + model_name)
+    chess_gui.draw_neural_network(model)
     try:
         new_model = load_model(model_name)
     except IOError:
         chess_gui.show_notification("Model " + model_name + " not found")
-        print(model.summary())
-        chess_gui.show_notification("Loaded model " + model_name)
-        chess_gui.draw_neural_network(model)
         return
     model.set_weights(new_model.get_weights())
 
