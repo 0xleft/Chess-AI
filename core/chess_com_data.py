@@ -36,6 +36,8 @@ def get_players():
 def get_player_archives(player):
     url = "https://api.chess.com/pub/player/" + player + "/games/archives"
     response = requests.get(url)
+    if response.status_code != 200:
+        return []
     data = response.json()
     archives = data["archives"]
     return archives
