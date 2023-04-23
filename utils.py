@@ -12,9 +12,7 @@ def convert_to_int(board):
                 board_state.append(board.piece_at(i).piece_type)
             else:
                 board_state.append(-board.piece_at(i).piece_type)
-    # flip vertically
     board_state = board_state[::-1]
-    # flip horizontally
     board_state = [board_state[i:i + 8][::-1] for i in range(0, 64, 8)]
     board_state = [item for sublist in board_state for item in sublist]
     return board_state
@@ -34,7 +32,11 @@ def decode_move(move):
 
 
 def is_move_legal(board, move):
-    for legal_move in board.legal_moves:
-        if legal_move == move:
-            return True
-    return False
+    try:
+        board.push_san(move)
+        board.pop()
+        return True
+    except chess.InvalidMoveError:
+        return False
+    except chess.IllegalMoveError:
+        return False

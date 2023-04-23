@@ -10,7 +10,7 @@ from utils import decode_move
 gui = ChessGUI(500, 500)
 highest = 0
 entropy = 0.5
-DECAY = 0.99999999999
+DECAY = 0.999
 
 
 def record_game(board, model):
@@ -32,17 +32,11 @@ def record_game(board, model):
             move = [0] * 128
             move[from_num] = 1
             move[to_num + 64] = 1
+            gui.update_board(board, model)
             if board.turn:
                 white_moves.append([board_state, np.array([move])])
             else:
                 black_moves.append([board_state, np.array([move])])
-            gui.clear()
-            gui.draw_board(get_board_state(board), model)
-            if len(white_moves) + len(black_moves) > highest:
-                highest = len(white_moves) + len(black_moves)
-            gui.draw_text(f"Most moves: {highest} \n Last move: {from_move + to_move} \n Entropy: {entropy} \n",
-                          (255, 0, 0), 0, 0)
-            gui.update()
         else:
             first_legal_move = list(board.legal_moves)[random.randint(0, len(list(board.legal_moves)) - 1)]
             from_move_decoded, to_move_decoded = decode_move(first_legal_move)
@@ -50,20 +44,17 @@ def record_game(board, model):
             move[from_move_decoded] = 1
             move[to_move_decoded + 64] = 1
             board.push_san(str(first_legal_move))
-            gui.clear()
-            gui.draw_board(get_board_state(board), model)
-            if len(white_moves) + len(black_moves) > highest:
-                highest = len(white_moves) + len(black_moves)
-            gui.draw_text(f"Most moves: {highest} \n Last move: {from_move + to_move} \n Entropy: {entropy} \n",
-                          (255, 0, 0), 0, 0)
-            gui.update()
-            # this is just so it learns to not make illegal moves
+            gui.update_board(board, model)
             if board.turn:
                 white_moves.append([board_state, np.array([move])])
+                print([board_state, np.array([move])])
             else:
                 black_moves.append([board_state, np.array([move])])
+                print([board_state, np.array([move])])
             break
 
+    if len(white_moves) > highest:
+        highest = len(white_moves)
     if board.turn:
         return white_moves
     else:

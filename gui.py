@@ -71,7 +71,8 @@ class NeuralGUI:
             weight_index += 1
 
     def draw_neuron(self, neuron_index, index):
-        pygame.draw.circle(self.screen, color=(255, 255, 255), radius=1, width=1, center=(index * 100 + 10, neuron_index * 3 + 10))
+        pygame.draw.circle(self.screen, color=(255, 255, 255), radius=1, width=1,
+                           center=(index * 100 + 10, neuron_index * 3 + 10))
 
 
 class ChessGUI:
@@ -109,6 +110,11 @@ class ChessGUI:
                                                  (int(self.width / 8), int(self.height / 8)))
         self.prediction = pygame.transform.scale(pygame.image.load("pieces/prediction.png"),
                                                  (int(self.width / 8), int(self.height / 8)))
+
+    def update_board(self, board, model):
+        self.clear()
+        self.draw_board(get_board_state(board), model)
+        self.update()
 
     def draw_text(self, text, color, x, y):
         self.screen.blit(self.font.render(text, True, color), (x, y))
