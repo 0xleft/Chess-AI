@@ -1,4 +1,4 @@
-import chess_com_data
+from core import chess_com_data
 
 full_data = []
 for archive in chess_com_data.get_player_archives(chess_com_data.get_players()[0]):

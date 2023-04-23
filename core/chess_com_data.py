@@ -1,11 +1,7 @@
 import math
 
-import numpy as np
 import requests
-import chess
-from gui import *
-import time
-from utils import *
+from core.utils import *
 
 
 def decode_tcn(tcn):
@@ -65,10 +61,6 @@ def collect_player_data(url):
                     board.push_san(move["drop"] + "@" + move["to"])
                 else:
                     board.push_san(move["from"] + move["to"])
-                # gui.clear()
-                # gui.draw_board(board, None)
-                # gui.update()
-                # time.sleep(1)
         except chess.IllegalMoveError:
             continue
         except chess.InvalidMoveError:

@@ -1,5 +1,15 @@
 import chess
-from constants import *
+import numpy as np
+
+from core.constants import *
+
+
+def get_board_state(board):
+    board_state = convert_to_int(board)
+    board_state.append(int(board.turn))
+    board_state = np.array(board_state)
+    board_state = board_state.reshape(1, 65)
+    return board_state
 
 
 def convert_to_int(board):

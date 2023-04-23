@@ -1,20 +1,15 @@
 import random
 
-from gui import *
-from constants import *
-import chess
-from utils import *
+from core.utils import *
 
-from utils import decode_move
+from core.utils import decode_move
 
-gui = ChessGUI(500, 500)
-highest = 0
 entropy = 0.5
 DECAY = 0.999
 
 
 def record_game(board, model):
-    global highest, entropy
+    global entropy
     white_moves = []
     black_moves = []
     while True:
@@ -32,7 +27,6 @@ def record_game(board, model):
             move = [0] * 128
             move[from_num] = 1
             move[to_num + 64] = 1
-            gui.update_board(board, model)
             if board.turn:
                 white_moves.append([board_state, np.array([move])])
             else:
@@ -44,17 +38,12 @@ def record_game(board, model):
             move[from_move_decoded] = 1
             move[to_move_decoded + 64] = 1
             board.push_san(str(first_legal_move))
-            gui.update_board(board, model)
             if board.turn:
                 white_moves.append([board_state, np.array([move])])
-                print([board_state, np.array([move])])
             else:
                 black_moves.append([board_state, np.array([move])])
-                print([board_state, np.array([move])])
             break
 
-    if len(white_moves) > highest:
-        highest = len(white_moves)
     if board.turn:
         return white_moves
     else:
