@@ -7,6 +7,7 @@ from keras.optimizers import Adam
 from core import chess_com_data
 from core.data import record_game, get_move
 from core.utils import get_board_state
+from keras.saving.save import save_model
 
 training = False
 
@@ -67,21 +68,24 @@ def train_by_itself(model, chess_gui):
             chess_gui.update_statistic("illegal_moves", f"Illegal moves: {illegal_moves}")
             illegal_moves += 1
 
-        if winner == "illegal":
-            legal_moves += len(data) - 1
-            if len(data) - 1 > max_moves:
-                max_moves = len(data)
-        else:
-            legal_moves += len(data)
-            if len(data) > max_moves:
-                max_moves = len(data)
+        legal_moves_done = len(data) - 1
+        if winner != "illegal":
+            legal_moves_done = len(data)
+        legal_moves += legal_moves_done
+        if legal_moves_done > max_moves:
+            max_moves = legal_moves_done
         chess_gui.update_statistic("max_moves", f"Max moves: {max_moves}")
         chess_gui.update_statistic("legal_moves", f"Legal moves: {legal_moves}")
+
+        if (total_moves % 20000) == 0:
+            chess_gui.show_notification(f"Total moves: {total_moves}")
+            save_model(model, f"models/model{total_moves}_self.h5")
 
         model, results = train_model(data, model, chess_gui)
         loss = results.history['loss'][0]
         chess_gui.update_statistic("loss", f"Loss: {loss}")
 def train_from_chess_com(model, chess_gui):
+    total_moves = 0
     chess_gui.show_notification("Starting training")
     global training
     training = True
@@ -95,6 +99,14 @@ def train_from_chess_com(model, chess_gui):
             chess_gui.show_notification("Training from " + archive, 10000)
             data = chess_com_data.collect_player_data(archive)
             model, results = train_model(data, model, chess_gui)
+            loss = results.history['loss'][0]
+            chess_gui.update_statistic("loss", f"Loss: {loss}")
+            total_moves += len(data)
+            chess_gui.update_statistic("total_moves", f"Total moves: {total_moves}")
+            if (total_moves % 20000) == 0:
+                chess_gui.show_notification(f"Total moves: {total_moves}")
+                save_model(model, f"models/model{total_moves}_chesscom.h5")
+
 
 def train_special_mode(model, chess_gui, player_name):
     chess_gui.show_notification("Starting training")

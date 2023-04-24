@@ -8,26 +8,25 @@ from core.model import set_training_mode, stop_training, create_model, test_pred
 import chess
 
 def load_model_weights(model_name, model, chess_gui):
-    chess_gui.show_notification("Loading model " + model_name)
     print(model.summary())
-    chess_gui.show_notification("Loaded model " + model_name)
     chess_gui.draw_neural_network(model)
     try:
-        new_model = load_model(model_name)
+        model.load_weights("models/" + model_name + ".h5")
     except IOError:
         chess_gui.show_notification("Model " + model_name + " not found")
         return
-    model.set_weights(new_model.get_weights())
+    chess_gui.show_notification("Loaded model weights " + model_name)
 
 
 if __name__ == '__main__':
     chess_gui = ChessGUI(1000, 1000)
-    if os.path.exists("models/model.h5"):
-        model = load_model("models/model.h5")
+    print("Creating new model")
+    model = create_model()
+    chess_gui.show_notification("Created new model")
+    if os.path.exists("models/model_weights.h5"):
+        model.load_weights("models/model_weights.h5")
     else:
-        print("Creating new model")
-        model = create_model()
-        chess_gui.show_notification("Created new model")
+        chess_gui.show_notification("No model weights found")
 
     print(model.summary())
     board = chess.Board()
@@ -35,7 +34,7 @@ if __name__ == '__main__':
     training_options = chess_gui.add_dropdown_menu(["itself", "chesscom"], 100, 0)
     start_training_button = chess_gui.add_button("Start training", lambda: set_training_mode(training_options.get(), model, chess_gui), 0, 0)
     stop_training_button = chess_gui.add_button("Stop training", lambda: stop_training(), 0, 25)
-    save_model_button = chess_gui.add_button("Save model", lambda: save_model(model, f"models/model{str(datetime.now()).replace(' ', '-').replace(':', '-').replace('.', '-')}.h5"), 0, 50)
+    save_model_button = chess_gui.add_button("Save model", lambda: model.save_weights(f"models/model{str(datetime.now()).replace(' ', '-').replace(':', '-').replace('.', '-')}_weights.h5"), 0, 50)
 
     # statistics
     chess_gui.add_statistic("white_wins", "White wins: 0", 0, 100)
