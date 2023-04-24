@@ -11,9 +11,8 @@ def load_model_weights(model_name, model, chess_gui):
     print(model.summary())
     chess_gui.draw_neural_network(model)
     try:
-        model.load_weights(model_name)
-    except IOError as e:
-        print(e)
+        model.load_weights("models/" + model_name + ".h5")
+    except IOError:
         chess_gui.show_notification("Model " + model_name + " not found")
         return
     chess_gui.show_notification("Loaded model weights " + model_name)
