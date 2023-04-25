@@ -43,7 +43,8 @@ if __name__ == '__main__':
     chess_gui.add_statistic("illegal_moves", "Illegal moves: 0", 0, 200)
     chess_gui.add_statistic("legal_moves", "Legal moves: 0", 0, 225)
     chess_gui.add_statistic("total_moves", "Total moves: 0", 0, 250)
-    chess_gui.add_statistic("loss", "Loss: 0", 0, 275)
+    chess_gui.add_statistic("move_ratio", "Legal/Illegal move ration: 1:1", 0, 275)
+    chess_gui.add_statistic("loss", "Loss: 0", 0, 300)
 
     board_fen_input = chess_gui.add_input(0, 500)
     board_fen_button = chess_gui.add_button("Test prediction", lambda: test_predict(chess_gui, model, board_fen_input.get()), 0, 525)

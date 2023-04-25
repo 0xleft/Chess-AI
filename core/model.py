@@ -15,15 +15,21 @@ training = False
 def create_model():
     model = Sequential()
     model.add(Dense(64, input_dim=65, activation='relu'))
-    model.add(Activation('relu'))
-    model.add(Dense(200, activation='relu'))
     model.add(Dense(128, activation='relu'))
-    model.add(Activation('tanh'))
     model.add(Dense(128, activation='relu'))
+    model.add(Dense(128, activation='relu'))
+    model.add(Dense(210, activation='linear'))
     model.add(Dense(200, activation='relu'))
+    model.add(Dense(500, activation='relu'))
+    model.add(Dense(200, activation='linear'))
+    model.add(Dense(500, activation='relu'))
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(500, activation='linear'))
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(200, activation='linear'))
     model.add(Dense(200, activation='relu'))
     model.add(Dense(128, activation='sigmoid'))
-    model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=0.001), metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=0.0001), metrics=['accuracy'])
     return model
 
 
@@ -81,6 +87,7 @@ def train_by_itself(model, chess_gui):
             chess_gui.show_notification(f"Total moves: {total_moves}")
             save_model(model, f"models/model{total_moves}_self.h5")
 
+        chess_gui.update_statistic("move_ratio", f"Legal/Illegal move ratio: {round(legal_moves/total_moves, 4)} : {round(illegal_moves/total_moves, 4)}")
         model, results = train_model(data, model, chess_gui)
         loss = results.history['loss'][0]
         chess_gui.update_statistic("loss", f"Loss: {loss}")
