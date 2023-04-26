@@ -7,7 +7,7 @@ from core.utils import *
 from core.utils import decode_move
 
 entropy = 0.5
-DECAY = 0.999
+DECAY = 0.99
 
 
 def record_game(board, model):
@@ -23,8 +23,8 @@ def record_game(board, model):
             moves = []
         board_state = get_board_state(board)
         prediction = model.predict(board_state, verbose=0)
-        from_move, from_num = get_move(prediction[0][:64])
-        to_move, to_num = get_move(prediction[0][64:])
+        from_move, from_num = get_move(prediction[0][:64], entropy)
+        to_move, to_num = get_move(prediction[0][64:], entropy)
         if is_move_legal(board, from_move + to_move):
             entropy *= DECAY
             board.push_san(from_move + to_move)
@@ -49,12 +49,7 @@ def record_game(board, model):
         return moves, winner
 
 
-def get_move(input_matrix):
-    global entropy
-    if random.random() < entropy:
-        move = random.randint(0, 63)
-        out_move = NUMBER_TO_LETTER[move % 8] + str(move // 8 + 1)
-        return out_move, move
+def get_move(input_matrix, entropy=0.5):
     move = np.argmax(input_matrix)
     out_move = NUMBER_TO_LETTER[move % 8] + str(move // 8 + 1)
     return out_move, move

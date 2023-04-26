@@ -6,7 +6,7 @@ from keras.optimizers import Adam
 
 from core import chess_com_data
 from core.data import record_game, get_move
-from core.utils import get_board_state
+from core.utils import get_board_state, decode_move
 from keras.saving.save import save_model
 
 training = False
@@ -23,23 +23,43 @@ def create_model():
     model.add(Dense(500, activation='relu'))
     model.add(Dense(200, activation='linear'))
     model.add(Dense(500, activation='relu'))
+    model.add(Dense(200, activation='linear'))
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(500, activation='relu'))
     model.add(Dense(200, activation='relu'))
     model.add(Dense(500, activation='linear'))
     model.add(Dense(200, activation='relu'))
     model.add(Dense(200, activation='linear'))
     model.add(Dense(200, activation='relu'))
     model.add(Dense(128, activation='sigmoid'))
-    model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=0.0001), metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=0.000001), metrics=['accuracy'])
     return model
 
 
 def train_model(input_data, model, chess_gui, epochs=1, verbose=0):
+    results = None
     for train_data in input_data:
         if not training:
             break
         chess_gui.draw_from_state(train_data[0])
+        # draw move ---
+        move = train_data[1][0]
+        from_move, to_move = decode_move(get_move(move[:64])[0] + get_move(move[64:])[0])
+        # decode
+        from_x = from_move % 8
+        from_y = from_move // 8
+        to_x = to_move % 8
+        to_y = to_move // 8
+        # flip horizontally
+        from_x = 7 - from_x
+        to_x = 7 - to_x
+        # flip vertically
+        from_y = 7 - from_y
+        to_y = 7 - to_y
+        chess_gui.draw_arrow(from_x, from_y, to_x, to_y, "red")
         results = model.fit(train_data[0], train_data[1], epochs=epochs, verbose=verbose)
-    # chess_gui.draw_neural_network(model)
+    if results is None:
+        results = {"loss": [0], "accuracy": [0]}
     return model, results
 
 
@@ -69,7 +89,7 @@ def train_by_itself(model, chess_gui):
             chess_gui.update_statistic("black_wins", f"Black wins: {black_wins}")
             black_wins += 1
         elif winner == "draw":
-             pass
+            pass
         elif winner == "illegal":
             chess_gui.update_statistic("illegal_moves", f"Illegal moves: {illegal_moves}")
             illegal_moves += 1
@@ -85,12 +105,15 @@ def train_by_itself(model, chess_gui):
 
         if (total_moves % 20000) == 0:
             chess_gui.show_notification(f"Total moves: {total_moves}")
-            save_model(model, f"models/model{total_moves}_self.h5")
+            model.save_weights(f"models/model{total_moves}_weights.h5")
 
-        chess_gui.update_statistic("move_ratio", f"Legal/Illegal move ratio: {round(legal_moves/total_moves, 4)} : {round(illegal_moves/total_moves, 4)}")
+        chess_gui.update_statistic("move_ratio",
+                                   f"Legal/Illegal move ratio: {round(legal_moves / total_moves, 4)} : {round(illegal_moves / total_moves, 4)}")
         model, results = train_model(data, model, chess_gui)
         loss = results.history['loss'][0]
         chess_gui.update_statistic("loss", f"Loss: {loss}")
+
+
 def train_from_chess_com(model, chess_gui):
     total_moves = 0
     chess_gui.show_notification("Starting training")
@@ -127,6 +150,7 @@ def train_special_mode(model, chess_gui, player_name):
         data = chess_com_data.collect_player_data(archive)
         model = train_model(data, model, chess_gui)
 
+
 def set_training_mode(mode, model, chess_gui):
     if training:
         chess_gui.show_notification("Already training")
@@ -137,6 +161,7 @@ def set_training_mode(mode, model, chess_gui):
         train_from_chess_com(model, chess_gui)
     else:
         train_special_mode(model, chess_gui, mode)
+
 
 def test_predict(chess_gui, model, fen):
     chess_board = chess.Board()
@@ -151,13 +176,11 @@ def test_predict(chess_gui, model, fen):
     board_state = get_board_state(chess_board)
     prediction = model.predict(board_state, verbose=0)
 
-    _, from_num = get_move(prediction[0][:64])
-    _, to_num = get_move(prediction[0][64:])
+    _, from_num = get_move(prediction[0][:64], 0)
+    _, to_num = get_move(prediction[0][64:], 0)
 
     from_x = from_num % 8
     from_y = from_num // 8
     to_x = to_num % 8
     to_y = to_num // 8
     chess_gui.draw_arrow(from_x, from_y, to_x, to_y, "red")
-
-
