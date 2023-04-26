@@ -3,7 +3,9 @@ import tkinter as tk
 import chess
 import numpy
 from PIL import Image, ImageTk
-from core.utils import get_board_state
+
+from core.data import get_move
+from core.utils import get_board_state, decode_move
 
 from keras_visualizer import visualizer
 import os
@@ -155,3 +157,18 @@ class ChessGUI:
         self.neural_network_canvas.bind("<Button-1>", open_graph)
         self.neural_network_canvas.update()
 
+    def draw_move(self, move):
+        from_move, to_move = decode_move(get_move(move[:64])[0] + get_move(move[64:])[0])
+        # decode
+        from_x = from_move % 8
+        from_y = from_move // 8
+        to_x = to_move % 8
+        to_y = to_move // 8
+        # flip horizontally
+        from_x = 7 - from_x
+        to_x = 7 - to_x
+        # flip vertically
+        from_y = 7 - from_y
+        to_y = 7 - to_y
+        self.draw_arrow(from_x, from_y, to_x, to_y, "red")
+        self.root.update()

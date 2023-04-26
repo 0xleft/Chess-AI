@@ -4,7 +4,7 @@ from keras import Sequential
 from keras.layers import Dense, Dropout, Activation
 from keras.optimizers import Adam
 
-from core import chess_com_data
+from core import chess_com_data, genetic_algorithm
 from core.data import record_game, get_move
 from core.utils import get_board_state, decode_move
 from keras.saving.save import save_model
@@ -44,19 +44,7 @@ def train_model(input_data, model, chess_gui, epochs=1, verbose=0):
         chess_gui.draw_from_state(train_data[0])
         # draw move ---
         move = train_data[1][0]
-        from_move, to_move = decode_move(get_move(move[:64])[0] + get_move(move[64:])[0])
-        # decode
-        from_x = from_move % 8
-        from_y = from_move // 8
-        to_x = to_move % 8
-        to_y = to_move // 8
-        # flip horizontally
-        from_x = 7 - from_x
-        to_x = 7 - to_x
-        # flip vertically
-        from_y = 7 - from_y
-        to_y = 7 - to_y
-        chess_gui.draw_arrow(from_x, from_y, to_x, to_y, "red")
+        chess_gui.draw_move(move)
         results = model.fit(train_data[0], train_data[1], epochs=epochs, verbose=verbose)
     if results is None:
         results = {"loss": [0], "accuracy": [0]}
@@ -151,6 +139,19 @@ def train_special_mode(model, chess_gui, player_name):
         model = train_model(data, model, chess_gui)
 
 
+def train_genetic_algorithm(model, chess_gui):
+    chess_gui.show_notification("Starting genetic training")
+    max_moves = 0
+    illegal_moves = 0
+    global training
+    training = True
+    while training:
+        if not training:
+            break
+        new_weights = genetic_algorithm.train(model, chess_gui)[0]
+        model.set_weights(new_weights)
+
+
 def set_training_mode(mode, model, chess_gui):
     if training:
         chess_gui.show_notification("Already training")
@@ -159,6 +160,8 @@ def set_training_mode(mode, model, chess_gui):
         train_by_itself(model, chess_gui)
     elif mode == "chesscom":
         train_from_chess_com(model, chess_gui)
+    elif mode == "genetic":
+        train_genetic_algorithm(model, chess_gui)
     else:
         train_special_mode(model, chess_gui, mode)
 
