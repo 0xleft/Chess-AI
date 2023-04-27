@@ -76,8 +76,6 @@ def train_by_itself(model, chess_gui):
         elif winner == "black":
             chess_gui.update_statistic("black_wins", f"Black wins: {black_wins}")
             black_wins += 1
-        elif winner == "draw":
-            pass
         elif winner == "illegal":
             chess_gui.update_statistic("illegal_moves", f"Illegal moves: {illegal_moves}")
             illegal_moves += 1
@@ -91,7 +89,7 @@ def train_by_itself(model, chess_gui):
         chess_gui.update_statistic("max_moves", f"Max moves: {max_moves}")
         chess_gui.update_statistic("legal_moves", f"Legal moves: {legal_moves}")
 
-        if (total_moves % 20000) == 0:
+        if (total_moves % 10000) == 0:
             chess_gui.show_notification(f"Total moves: {total_moves}")
             model.save_weights(f"models/model{total_moves}_weights.h5")
 

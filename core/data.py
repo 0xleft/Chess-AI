@@ -16,6 +16,11 @@ def record_game(board, model):
     winner = None
     while True:
         if board.is_game_over():
+            if board.result() == "1/2-1/2":
+                board = chess.Board()
+                moves = []
+                board.push(list(board.legal_moves)[random.randint(0, len(list(board.legal_moves)) - 1)])
+                continue
             break
         if board.is_stalemate() or board.is_insufficient_material() or board.is_seventyfive_moves() or board.is_fivefold_repetition():
             # we never want to draw
