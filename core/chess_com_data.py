@@ -97,7 +97,7 @@ def collect_player_data_moves(url):
                 input_data = np.full(shape=(80, 2), fill_value=numpy.array((65, 65)))
 
                 for i in range(len(game_moves)):
-                    input_data[i] = np.array(game_moves[i])
+                    input_data[i] = game_moves[i]
 
                 game_data.append(
                     [
@@ -117,4 +117,3 @@ def collect_player_data_moves(url):
     print("Collected " + str(len(game_data)) + " moves")
     return game_data
 
-print(collect_player_data_moves("https://api.chess.com/pub/player/123lt/games/2014/09")[10][0])
