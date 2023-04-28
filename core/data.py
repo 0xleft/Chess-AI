@@ -58,3 +58,7 @@ def get_move(input_matrix, entropy=0.5):
     move = np.argmax(input_matrix)
     out_move = NUMBER_TO_LETTER[move % 8] + str(move // 8 + 1)
     return out_move, move
+
+
+def get_raw_move(move):
+    return NUMBER_TO_LETTER[move % 8] + str(move // 8 + 1)

@@ -2,9 +2,10 @@ import tkinter as tk
 
 import chess
 import numpy
+import numpy as np
 from PIL import Image, ImageTk
 
-from core.data import get_move
+from core.data import get_move, get_raw_move
 from core.utils import get_board_state, decode_move
 
 from keras_visualizer import visualizer
@@ -97,6 +98,20 @@ class ChessGUI:
                                      y * self.canvas.winfo_height() / 8 + self.canvas.winfo_height() / 8,
                                      fill=color)
 
+    def draw_from_moves(self, moves):
+        self.draw_board()
+
+        board = chess.Board()
+        for move in moves:
+            print(move)
+            if str(move) == "[65 65]":
+                continue
+            board.push_san(get_raw_move(move[0]) + get_raw_move(move[1]))
+
+        self.draw_pieces(get_board_state(board))
+
+        self.canvas.update()
+
     def draw_board(self):
         self.canvas.delete("all")
         for x in range(8):
@@ -164,9 +179,6 @@ class ChessGUI:
         from_y = from_move // 8
         to_x = to_move % 8
         to_y = to_move // 8
-        # flip horizontally
-        from_x = 7 - from_x
-        to_x = 7 - to_x
         # flip vertically
         from_y = 7 - from_y
         to_y = 7 - to_y
