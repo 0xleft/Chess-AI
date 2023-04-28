@@ -28,7 +28,7 @@ def convert_to_int(board):
     return board_state
 
 
-def decode_move(move) -> (int, int):
+def decode_move(move):
     characters = str(move)
     from_move_column = characters[0]
     from_move_row = characters[1]

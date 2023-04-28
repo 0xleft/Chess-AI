@@ -1,7 +1,5 @@
 import math
 
-import numpy
-import numpy as np
 import requests
 from core.utils import *
 
@@ -71,49 +69,3 @@ def collect_player_data(url):
             continue
     print("Collected " + str(len(game_data)) + " moves")
     return game_data
-
-
-def collect_player_data_moves(url):
-    game_data = []
-    response = requests.get(url)
-    data = response.json()
-    games = data["games"]
-    for game in games:
-        board = chess.Board()
-        tnc = game["tcn"]
-        decoded_tnc = decode_tcn(tnc)
-        game_moves = []
-        try:
-            for move in decoded_tnc:
-                move = move["from"] + move["to"]
-
-                from_move_index, to_move_index = decode_move(move)
-
-                move_matrix = np.zeros((2, 64))
-
-                move_matrix[0][from_move_index] = 1
-                move_matrix[1][to_move_index] = 1
-
-                input_data = np.full(shape=(80, 2), fill_value=numpy.array((65, 65)))
-
-                for i in range(len(game_moves)):
-                    input_data[i] = game_moves[i]
-
-                game_data.append(
-                    [
-                        input_data,  # 1x80
-                        move_matrix  # 2x64
-                    ]
-                )
-
-                game_moves.append((from_move_index, to_move_index))
-                board.push_san(move)
-        except chess.IllegalMoveError:
-            continue
-        except chess.InvalidMoveError:
-            continue
-        except IndexError:
-            continue
-    print("Collected " + str(len(game_data)) + " moves")
-    return game_data
-

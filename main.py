@@ -31,7 +31,7 @@ if __name__ == '__main__':
     print(model.summary())
     board = chess.Board()
 
-    training_options = chess_gui.add_dropdown_menu(["itself", "chesscom", "genetic", "lstm"], 100, 0)
+    training_options = chess_gui.add_dropdown_menu(["itself", "chesscom", "genetic"], 100, 0)
     start_training_button = chess_gui.add_button("Start training", lambda: set_training_mode(training_options.get(), model, chess_gui), 0, 0)
     stop_training_button = chess_gui.add_button("Stop training", lambda: stop_training(), 0, 25)
     save_model_button = chess_gui.add_button("Save model", lambda: model.save_weights(f"models/model{str(datetime.now()).replace(' ', '-').replace(':', '-').replace('.', '-')}_weights.h5"), 0, 50)

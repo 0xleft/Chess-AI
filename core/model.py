@@ -1,10 +1,10 @@
 import chess
 import keras.saving.save
 from keras import Sequential
-from keras.layers import Dense, Dropout, Activation, LSTM, CuDNNLSTM, Embedding, Reshape
+from keras.layers import Dense, Dropout, Activation
 from keras.optimizers import Adam
 
-from core import chess_com_data, genetic_algorithm, lstm_data
+from core import chess_com_data, genetic_algorithm
 from core.data import record_game, get_move
 from core.utils import get_board_state, decode_move
 from keras.saving.save import save_model
@@ -14,24 +14,26 @@ training = False
 
 def create_model():
     model = Sequential()
-    model.add(Embedding(64, 80, input_length=80))
-    model.add(CuDNNLSTM(128))
-    model.add(Dense(128, activation='softmax'))
-    model.add(Reshape(target_shape=(2, 64)))
-    model.compile(loss='categorical_crossentropy', optimizer=Adam(learning_rate=0.000001), metrics=['accuracy'])
+    model.add(Dense(64, input_dim=65, activation='relu'))
+    model.add(Dense(128, activation='relu'))
+    model.add(Dense(128, activation='relu'))
+    model.add(Dense(128, activation='relu'))
+    model.add(Dense(210, activation='linear'))
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(500, activation='relu'))
+    model.add(Dense(200, activation='linear'))
+    model.add(Dense(500, activation='relu'))
+    model.add(Dense(200, activation='linear'))
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(500, activation='relu'))
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(500, activation='linear'))
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(200, activation='linear'))
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(128, activation='sigmoid'))
+    model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=0.000001), metrics=['accuracy'])
     return model
-
-
-def train_lstm_model(model, chess_gui):
-    global training
-    training = True
-    while training:
-        data = lstm_data.get_data()
-        for input_data, output_data in data:
-            chess_gui.draw_from_moves(input_data)
-            results = model.fit(input_data, output_data, epochs=10, batch_size=32, validation_split=0.2)
-
-    return model, results
 
 
 def train_model(input_data, model, chess_gui, epochs=1, verbose=0):
@@ -158,8 +160,6 @@ def set_training_mode(mode, model, chess_gui):
         train_from_chess_com(model, chess_gui)
     elif mode == "genetic":
         train_genetic_algorithm(model, chess_gui)
-    elif mode == "lstm":
-        train_lstm_model(model, chess_gui)
     else:
         train_special_mode(model, chess_gui, mode)
 
