@@ -164,11 +164,5 @@ class ChessGUI:
         from_y = from_move // 8
         to_x = to_move % 8
         to_y = to_move // 8
-        # flip horizontally
-        from_x = 7 - from_x
-        to_x = 7 - to_x
-        # flip vertically
-        from_y = 7 - from_y
-        to_y = 7 - to_y
         self.draw_arrow(from_x, from_y, to_x, to_y, "red")
         self.root.update()

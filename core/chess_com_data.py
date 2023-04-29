@@ -1,4 +1,5 @@
 import math
+import random
 
 import requests
 from core.utils import *
@@ -40,6 +41,7 @@ def get_player_archives(player):
         return []
     data = response.json()
     archives = data["archives"]
+    random.shuffle(archives)
     return archives
 
 

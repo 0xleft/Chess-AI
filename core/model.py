@@ -1,3 +1,5 @@
+import random
+
 import chess
 import keras.saving.save
 from keras import Sequential
@@ -36,7 +38,7 @@ def create_model():
     return model
 
 
-def train_model(input_data, model, chess_gui, epochs=1, verbose=0):
+def train_model(input_data, model, chess_gui, epochs=10, verbose=0):
     results = None
     for train_data in input_data:
         if not training:
